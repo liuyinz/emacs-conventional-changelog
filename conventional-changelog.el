@@ -28,7 +28,6 @@
 
 ;; Inspired by https://github.com/johnlepikhin/el-conventional-changelog
 ;; default config: https://github.com/conventional-changelog/conventional-changelog-config-spec
-;; TODO write command
 
 ;;; Code:
 
@@ -54,29 +53,51 @@ first if exists, otherwise create default file."
   :group 'conventional-changelog
   :type 'boolean)
 
-(defcustom conventional-changelog-versionrc nil
-  "Config file for standard-version if exists."
+(defcustom conventional-changelog-tmp-dir
+  "/tmp/conventional-changelog"
+  "Directory which stores temporary markdown file to generate org."
   :group 'conventional-changelog
   :type 'string)
 
-(defvar conventional-changelog-file nil
-  "The name of CHANGELOG file.")
+(defvar conventional-changelog-versionrc nil
+  "Config file for standard-version if exists.")
+
+(defun conventional-changelog-tmp-file ()
+  "Full path of temporary CHANGELOG.md file to generate org."
+  (let ((file (convert-standard-filename (expand-file-name "CHANGELOG.md"))))
+    (make-directory conventional-changelog-tmp-dir :parents)
+    (expand-file-name
+     (subst-char-in-string
+      ?/
+      ?!
+      (replace-regexp-in-string
+       "!"
+       "!!"
+       (if (eq (aref file 1) ?:)
+           (concat "/"
+                   "drive_"
+                   (char-to-string (downcase (aref file 0)))
+                   (if (eq (aref file 2) ?/)
+                       ""
+                     "/")
+                   (substring file 2))
+         file)))
+     conventional-changelog-tmp-dir)))
 
 (defun conventional-changelog-file ()
-  "Return the name of CHANGELOG file in the current repository if exists."
-  (unless conventional-changelog-file
-    (setq conventional-changelog-file
-          (or (car (directory-files
-                    (conventional-changelog-get-rootdir)
-                    nil
-                    "\\`CHANGELOG\\.\\(org\\|md\\)\\'"))
+  "Return fullpath of CHANGELOG file in the current repository if exists."
+  (or (car (directory-files
+            (conventional-changelog-get-rootdir)
+            'full
+            "\\`CHANGELOG\\.\\(org\\|md\\)\\'"))
+      (concat (conventional-changelog-get-rootdir)
+              "/"
               (pcase conventional-changelog-default-mode
                 ('markdown "CHANGELOG.md")
                 ('org "CHANGELOG.org")
                 (_ (user-error
                     "Unsupported mode: %s, using markdown or org instead"
                     conventional-changelog-default-mode))))))
-  conventional-changelog-file)
 
 (defun conventional-changelog-get-rootdir ()
   "Return the absolute path to the toplevel of the current repository."
@@ -84,25 +105,32 @@ first if exists, otherwise create default file."
 
 (transient-define-prefix conventional-changelog-menu ()
   "Show menu buffer for standard-version commands."
+  ["Preset"
+   ("-S" "Select preset" "--preset="
+    :choices ("angular" "atom" "codemirror" "ember"
+              "eslint" "express" "jquery" "jscs" "jshint"))
+   ("-H" "CHANGELOG header" "--header=")
+   ("-M" "Premajor release"  "--preMajor=")
+   ("-F" "Release message" "--releaseCommitMessageFormat=")]
   ["Options"
    ("-r" "Specify release type manually" "--release-as="
     :choices ("major" "minor" "patch"))
    ("-p" "Make pre-release with tag id" "--prerelease=")
-   ("-i" "Read CHANGELOG from" "--infile=")
+   ;; ("-i" "Read CHANGELOG from" "--infile=")
    ("-t" "Specify tag prefix" "--tag-prefix=")
    ("-P" "Populate commits under path only" "--path=")
    ("-e" "Specify commit preset" "--preset=")
-   ("-l" "Extract package name" "--lerna-package=")
+   ("-l" "Extract package name" "--lerna-package=")]
+  ["Toggle"
    ("-f" "First release" "--first-release")
    ("-s" "Sign" "--sign")
    ("-n" "Disable hooks" "--no-verify")
    ("-a" "Commit all staged changes" "--commit-all")
-   ("-S" "Silent" "--silent")
-   ("-D" "Dry run" "--dry-run")
-   ]
+   ("-D" "Dry run" "--dry-run")]
   ["Command"
    ("r" "Generate CHANGELOG" conventional-changelog-generate)
    ("o" "Open CHANGELOG" conventional-changelog-open)
+   ("e" "Edit Config" conventional-changelog-edit)
    ]
   )
 
@@ -112,21 +140,55 @@ first if exists, otherwise create default file."
   (interactive)
   (or working-directory (setq working-directory (conventional-changelog-get-rootdir)))
   (let ((cmd (executable-find "standard-version"))
-        (flags (or (mapconcat #'identity (transient-get-value) " ") "")))
+        (org-ext (string= "org" (file-name-extension (conventional-changelog-file))))
+        (flags (or (mapconcat #'identity (transient-get-value) " ") ""))
+        (tmp-file (conventional-changelog-tmp-file))
+        (path (conventional-changelog-file))
+        (shell-command-dont-erase-buffer 'beg-last-out))
+
     (unless cmd (user-error "Cannot find %s in PATH" cmd))
-    (call-process cmd nil nil nil flags)
-    (find-file-noselect (concat working-directory "/" (conventional-changelog-file)) t))
-  )
+
+    (when (and org-ext
+               (file-exists-p path)
+               (not (file-exists-p tmp-file)))
+      (shell-command
+       (format "pandoc -f org-auto_identifiers -t markdown_strict -o %s %s"
+               (shell-quote-argument path)
+               (shell-quote-argument tmp-file))))
+    (shell-command
+     (format "%s %s"
+             (shell-quote-argument cmd)
+             (shell-quote-argument
+              (concat flags "--infile=" (if org-ext tmp-file path)))))
+    (when org-ext
+      (shell-command
+       (format "pandoc -f markdown_strict -t org -o %s %s"
+               (shell-quote-argument tmp-file)
+               (shell-quote-argument path)))
+      (shell-command
+       (format "git -C %1$s add %2$s;git -C %1$s commit --amend --no-edit"
+               (shell-quote-argument working-directory)
+               (shell-quote-argument path))))
+
+    (find-file-noselect path t)))
 
 ;;;###autoload
 (defun conventional-changelog-open (&optional working-directory)
   "Open CHANGELOG file in `WORKING-DIRECTORY'."
   (interactive)
   (or working-directory (setq working-directory (conventional-changelog-get-rootdir)))
-  (let ((path (concat working-directory "/" (conventional-changelog-file))))
+  (let ((path (conventional-changelog-file)))
     (if (file-exists-p path)
         (find-file path)
       (message "File: %s not exists!" path))))
+
+(defun conventional-changelog-edit ()
+  "Edit config file in `conventional-changelog-versionrc'."
+  (interactive)
+  (let (versionrc (conventional-changelog-versionrc))
+    (if (and versionrc (file-exists-p versionrc))
+        (find-file versionrc)
+      (message "Versionrc not exists!"))))
 
 (provide 'conventional-changelog)
 ;;; conventional-changelog.el ends here
