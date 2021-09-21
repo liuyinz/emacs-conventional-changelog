@@ -54,6 +54,11 @@ first if exists, otherwise create default file."
   :group 'conventional-changelog
   :type 'boolean)
 
+(defcustom conventional-changelog-versionrc nil
+  "Config file for standard-version if exists."
+  :group 'conventional-changelog
+  :type 'string)
+
 (defvar conventional-changelog-file nil
   "The name of CHANGELOG file.")
 
@@ -96,11 +101,13 @@ first if exists, otherwise create default file."
    ("-D" "Dry run" "--dry-run")
    ]
   ["Command"
-   ("r" "Generate or Update CHANGELOG" conventional-changelog)]
+   ("r" "Generate CHANGELOG" conventional-changelog-generate)
+   ("o" "Open CHANGELOG" conventional-changelog-open)
+   ]
   )
 
 ;;;###autoload
-(defun conventional-changelog (&optional working-directory)
+(defun conventional-changelog-generate (&optional working-directory)
   "Generate or update changelog-file in `WORKING-DIRECTORY'."
   (interactive)
   (or working-directory (setq working-directory (conventional-changelog-get-rootdir)))
@@ -108,9 +115,18 @@ first if exists, otherwise create default file."
         (flags (or (mapconcat #'identity (transient-get-value) " ") "")))
     (unless cmd (user-error "Cannot find %s in PATH" cmd))
     (call-process cmd nil nil nil flags)
-    (find-file-noselect (concat working-directory "/" (conventional-changelog-file)) t)
-    )
+    (find-file-noselect (concat working-directory "/" (conventional-changelog-file)) t))
   )
+
+;;;###autoload
+(defun conventional-changelog-open (&optional working-directory)
+  "Open CHANGELOG file in `WORKING-DIRECTORY'."
+  (interactive)
+  (or working-directory (setq working-directory (conventional-changelog-get-rootdir)))
+  (let ((path (concat working-directory "/" (conventional-changelog-file))))
+    (if (file-exists-p path)
+        (find-file path)
+      (message "File: %s not exists!" path))))
 
 (provide 'conventional-changelog)
 ;;; conventional-changelog.el ends here
