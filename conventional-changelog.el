@@ -147,6 +147,9 @@ first if exists, otherwise create default file."
    ("e" "Edit Config" conventional-changelog-edit)]
   )
 
+;; TODO compress shell-command output
+;; TODO asyc-shell-command
+;; TODO add README.md
 ;;;###autoload
 (defun conventional-changelog-generate (&optional working-directory)
   "Generate or update changelog-file in `WORKING-DIRECTORY'."
