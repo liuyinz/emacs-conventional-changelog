@@ -139,36 +139,38 @@ first if exists, otherwise create default file."
   "Generate or update changelog-file in `WORKING-DIRECTORY'."
   (interactive)
   (or working-directory (setq working-directory (conventional-changelog-get-rootdir)))
-  (let ((cmd (executable-find "standard-version"))
-        (org-ext (string= "org" (file-name-extension (conventional-changelog-file))))
-        (flags (or (mapconcat #'identity (transient-get-value) " ") ""))
-        (tmp-file (conventional-changelog-tmp-file))
-        (path (conventional-changelog-file))
-        (shell-command-dont-erase-buffer 'beg-last-out))
+  (let* ((cmd (executable-find "standard-version"))
+         (org-ext (string= "org" (file-name-extension (conventional-changelog-file))))
+         (flags (or (mapconcat #'identity (transient-get-value) " ") ""))
+         (tmp-file (conventional-changelog-tmp-file))
+         (path (conventional-changelog-file))
+         (md-path (concat (file-name-sans-extension path) ".md"))
+         (shell-command-dont-erase-buffer 'beg-last-out))
 
     (unless cmd (user-error "Cannot find %s in PATH" cmd))
 
-    (when (and org-ext
-               (file-exists-p path)
-               (not (file-exists-p tmp-file)))
-      (shell-command
-       (format "pandoc -f org-auto_identifiers -t markdown_strict -o %s %s"
-               (shell-quote-argument path)
-               (shell-quote-argument tmp-file))))
+    (when (and org-ext (file-exists-p path))
+      (if (file-exists-p tmp-file)
+          (copy-file tmp-file md-path t)
+        (shell-command
+         (format "pandoc -f org-auto_identifiers -t markdown_strict -o %s %s"
+                 (shell-quote-argument md-path)
+                 (shell-quote-argument path)))))
+
     (shell-command
-     (format "%s %s"
-             (shell-quote-argument cmd)
-             (shell-quote-argument
-              (concat flags "--infile=" (if org-ext tmp-file path)))))
+     (format "%s %s" (shell-quote-argument cmd) (shell-quote-argument flags)))
+
     (when org-ext
       (shell-command
        (format "pandoc -f markdown_strict -t org -o %s %s"
-               (shell-quote-argument tmp-file)
-               (shell-quote-argument path)))
+               (shell-quote-argument path)
+               (shell-quote-argument md-path)))
+      (copy-file md-path tmp-file t)
       (shell-command
-       (format "git -C %1$s add %2$s;git -C %1$s commit --amend --no-edit"
+       (format "git -C %1$s add %2$s;git -C %1$s rm %3$s;git -C %1$s commit --amend --no-edit"
                (shell-quote-argument working-directory)
-               (shell-quote-argument path))))
+               (shell-quote-argument path)
+               (shell-quote-argument md-path))))
 
     (find-file-noselect path t)))
 
