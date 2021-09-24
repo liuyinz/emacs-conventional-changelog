@@ -31,8 +31,6 @@
 
 ;;; Code:
 
-(require 'seq)
-(require 'subr-x)
 (require 'transient)
 
 (defgroup conventional-changelog nil
@@ -48,8 +46,9 @@ first if exists, otherwise create default file."
   :type '(choice (const :tag "use CHANGELOG.md" markdown)
                  (const :tag "use CHANGELOG.org" org)))
 
+;; ISSUE https://github.com/conventional-changelog/standard-version/issues/812
 (defcustom conventional-changelog-fix-missing nil
-  "If non-nil, add changelog info for missing tags in CHANGELOG file."
+  "If non-nil, add version info for missing tags in CHANGELOG file."
   :group 'conventional-changelog
   :type 'boolean)
 
@@ -99,6 +98,11 @@ first if exists, otherwise create default file."
                     "Unsupported mode: %s, using markdown or org instead"
                     conventional-changelog-default-mode))))))
 
+(defun conventional-changelog-get-latest-tag ()
+  "Return name of latest tag info in current repository."
+  (string-trim (shell-command-to-string
+                "git describe --tags $(git rev-list --tags --max-count=1)")))
+
 (defun conventional-changelog-get-rootdir ()
   "Return the absolute path to the toplevel of the current repository."
   (string-trim (shell-command-to-string "git rev-parse --show-toplevel")))
@@ -116,7 +120,7 @@ first if exists, otherwise create default file."
    ("-r" "Specify release type manually" "--release-as="
     :choices ("major" "minor" "patch"))
    ("-p" "Make pre-release with tag id" "--prerelease=")
-   ;; ("-i" "Read CHANGELOG from" "--infile=")
+   ("-i" "Read CHANGELOG from" "--infile=")
    ("-t" "Specify tag prefix" "--tag-prefix=")
    ("-P" "Populate commits under path only" "--path=")
    ("-e" "Specify commit preset" "--preset=")
@@ -165,14 +169,16 @@ first if exists, otherwise create default file."
        (format "pandoc -f markdown_strict -t org -o %s %s"
                (shell-quote-argument path)
                (shell-quote-argument md-path)))
-      (copy-file md-path tmp-file t)
-      (shell-command
-       (format "git -C %1$s add %2$s;git -C %1$s rm %3$s;git -C %1$s commit --amend --no-edit"
-               (shell-quote-argument working-directory)
-               (shell-quote-argument path)
-               (shell-quote-argument md-path))))
+      (rename-file md-path tmp-file t)
+      (let ((default-directory working-directory)
+            (tag (conventional-changelog-get-latest-tag)))
+        (shell-command
+         (format "git tag -d %1$s;git add %2$s %3$s;git commit --amend --no-edit;git tag %1$s"
+                 (shell-quote-argument tag)
+                 (shell-quote-argument path)
+                 (shell-quote-argument md-path)))))
 
-    (find-file-noselect path t)))
+    (switch-to-buffer (find-file-noselect path t))))
 
 ;;;###autoload
 (defun conventional-changelog-open (&optional working-directory)
