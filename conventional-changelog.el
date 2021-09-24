@@ -61,6 +61,16 @@ first if exists, otherwise create default file."
 (defvar conventional-changelog-versionrc nil
   "Config file for standard-version if exists.")
 
+(defun conventional-changelog-versionrc ()
+  "Return fullpath of CHANGELOG file in the current repository if exists."
+  (unless conventional-changelog-versionrc
+    (setq conventional-changelog-versionrc
+          (car (directory-files
+                (getenv "HOME")
+                'full
+                "\\`\\.versionrc\\(\\.js\\|\\.json\\)?\\'"))))
+  conventional-changelog-versionrc)
+
 (defun conventional-changelog-tmp-file ()
   "Full path of temporary CHANGELOG.md file to generate org."
   (let ((file (convert-standard-filename (expand-file-name "CHANGELOG.md"))))
@@ -134,8 +144,7 @@ first if exists, otherwise create default file."
   ["Command"
    ("r" "Generate CHANGELOG" conventional-changelog-generate)
    ("o" "Open CHANGELOG" conventional-changelog-open)
-   ("e" "Edit Config" conventional-changelog-edit)
-   ]
+   ("e" "Edit Config" conventional-changelog-edit)]
   )
 
 ;;;###autoload
@@ -173,10 +182,11 @@ first if exists, otherwise create default file."
       (let ((default-directory working-directory)
             (tag (conventional-changelog-get-latest-tag)))
         (shell-command
-         (format "git tag -d %1$s;git add %2$s %3$s;git commit --amend --no-edit;git tag %1$s"
-                 (shell-quote-argument tag)
-                 (shell-quote-argument path)
-                 (shell-quote-argument md-path)))))
+         (format
+          "git tag -d %1$s;git add %2$s %3$s;git commit --amend --no-edit;git tag %1$s"
+          (shell-quote-argument tag)
+          (shell-quote-argument path)
+          (shell-quote-argument md-path)))))
 
     (switch-to-buffer (find-file-noselect path t))))
 
@@ -193,10 +203,19 @@ first if exists, otherwise create default file."
 (defun conventional-changelog-edit ()
   "Edit config file in `conventional-changelog-versionrc'."
   (interactive)
-  (let (versionrc (conventional-changelog-versionrc))
-    (if (and versionrc (file-exists-p versionrc))
+  (let ((versionrc (conventional-changelog-versionrc)))
+    (if versionrc
         (find-file versionrc)
-      (message "Versionrc not exists!"))))
+      (find-file
+       (completing-read
+        "No config under ~/, add one?"
+        '("~/.versionrc" "~/.versionrc.json" "~/.versionrc.js"))))))
+
+;; TODO transform between org and md
+;;;###autoload
+(defun conventional-changelog-transform ()
+  "."
+  )
 
 (provide 'conventional-changelog)
 ;;; conventional-changelog.el ends here
