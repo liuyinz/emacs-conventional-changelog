@@ -162,8 +162,14 @@ first if exists, otherwise create default file."
     ("r" "Generate CHANGELOG" conventional-changelog-generate)
     ("t" "Transform CHANGELOG" conventional-changelog-transform)
     ("o" "Open CHANGELOG" conventional-changelog-open)
-    ("e" "Open Config" conventional-changelog-edit)]]
-  )
+    ("e" "Open Config" conventional-changelog-edit)]])
+
+(defun conventional-changelog-integrate-magit ()
+  "Integrate command `conventional-changelog-menu' to `magit-tag'."
+  (with-eval-after-load 'magit-tag
+    (transient-append-suffix 'magit-tag
+      '(1 0 -1)
+      '("c" "changelog" conventional-changelog-menu))))
 
 ;;;###autoload
 (defun conventional-changelog-generate (&optional working-directory)
