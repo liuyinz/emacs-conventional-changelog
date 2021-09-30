@@ -1,8 +1,8 @@
 ;;; conventional-changelog.el --- Conventional Changelog Generator for Emacs -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021 食無魚
+;; Copyright (C) 2021 liuyinz
 
-;; Author: 食無魚 <liuyinz@gmail.com>
+;; Author: liuyinz <liuyinz@gmail.com>
 ;; Created: 2021-09-18 23:45:09
 ;; Version: 0.1.0
 ;; Keywords: tools
@@ -27,7 +27,6 @@
 ;;; Commentary:
 
 ;; Inspired by https://github.com/johnlepikhin/el-conventional-changelog
-;; default config: https://github.com/conventional-changelog/conventional-changelog-config-spec
 
 ;;; Code:
 
@@ -117,34 +116,49 @@ first if exists, otherwise create default file."
   "Return the absolute path to the toplevel of the current repository."
   (string-trim (shell-command-to-string "git rev-parse --show-toplevel")))
 
+(defun conventional-changelog-menu--header ()
+  "Header used in `conventional-changelog-menu'"
+  (let ((conf (abbreviate-file-name (conventional-changelog-versionrc)))
+        (name (file-name-nondirectory (conventional-changelog-file)))
+        (tag (conventional-changelog-get-latest-tag)))
+    (format (propertize "[%s]: %s\t[%s]: %s\t[%s]: %s\n" 'face 'bold)
+            (propertize "infile" 'face 'font-lock-doc-face)
+            (propertize name 'face 'font-lock-variable-name-face)
+            (propertize "latest" 'face 'font-lock-doc-face)
+            (propertize tag 'face 'font-lock-variable-name-face)
+            (propertize "conf" 'face 'font-lock-doc-face)
+            (propertize conf 'face 'font-lock-variable-name-face)
+            )))
+
 (transient-define-prefix conventional-changelog-menu ()
-  "Show menu buffer for standard-version commands."
-  ["Preset"
-   ("-S" "Select preset" "--preset="
-    :choices ("angular" "atom" "codemirror" "ember"
-              "eslint" "express" "jquery" "jscs" "jshint"))
-   ("-H" "CHANGELOG header" "--header=")
-   ("-M" "Premajor release"  "--preMajor=")
-   ("-F" "Release message" "--releaseCommitMessageFormat=")]
-  ["Options"
-   ("-r" "Specify release type manually" "--release-as="
-    :choices ("major" "minor" "patch"))
-   ("-p" "Make pre-release with tag id" "--prerelease=")
-   ("-i" "Read CHANGELOG from" "--infile=")
-   ("-t" "Specify tag prefix" "--tag-prefix=")
-   ("-P" "Populate commits under path only" "--path=")
-   ("-e" "Specify commit preset" "--preset=")
-   ("-l" "Extract package name" "--lerna-package=")]
-  ["Toggle"
-   ("-f" "First release" "--first-release")
-   ("-s" "Sign" "--sign")
-   ("-n" "Disable hooks" "--no-verify")
-   ("-a" "Commit all staged changes" "--commit-all")
-   ("-D" "Dry run" "--dry-run")]
-  ["Command"
-   ("r" "Generate CHANGELOG" conventional-changelog-generate)
-   ("o" "Open CHANGELOG" conventional-changelog-open)
-   ("e" "Edit Config" conventional-changelog-edit)]
+  "Invoke commands for `standard-version'."
+  [:description conventional-changelog-menu--header
+   :class transient-subgroups
+   ["Preset"
+    ("-S" "Select preset" "--preset="
+     :choices ("angular" "atom" "codemirror" "ember"
+               "eslint" "express" "jquery" "jscs" "jshint"))
+    ("-H" "CHANGELOG header" "--header=")
+    ("-M" "Premajor release"  "--preMajor=")
+    ("-F" "Release message" "--releaseCommitMessageFormat=")]
+   ["Options"
+    ("-r" "Specify release type manually" "--release-as="
+     :choices ("major" "minor" "patch"))
+    ("-p" "Make pre-release with tag id" "--prerelease=")
+    ("-i" "Read CHANGELOG from" "--infile=")
+    ("-t" "Specify tag prefix" "--tag-prefix=")
+    ("-P" "Populate commits under path only" "--path=")
+    ("-e" "Specify commit preset" "--preset=")
+    ("-f" "First release" "--first-release")
+    ("-s" "Sign" "--sign")
+    ("-n" "Disable hooks" "--no-verify")
+    ("-a" "Commit all staged changes" "--commit-all")
+    ("-D" "Dry run" "--dry-run")]
+   ["Command"
+    ("r" "Generate CHANGELOG" conventional-changelog-generate)
+    ("o" "Open CHANGELOG" conventional-changelog-open)
+    ("e" "Open Config" conventional-changelog-edit)]
+   ]
   )
 
 ;; TODO compress shell-command output
