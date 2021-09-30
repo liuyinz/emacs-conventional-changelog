@@ -4,9 +4,9 @@
 
 ;; Author: liuyinz <liuyinz@gmail.com>
 ;; Created: 2021-09-18 23:45:09
-;; Version: 0.1.0
+;; Version: 1.1.0-alpha.1
 ;; Keywords: tools
-;; Package-Requires: ((emacs "27.0"))
+;; Package-Requires: ((emacs "25.1") (transient "0.3.6"))
 ;; Homepage: https://github.com/liuyinz/emacs-conventional-changelog
 
 ;; This file is not a part of GNU Emacsl.
