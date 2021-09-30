@@ -1,6 +1,16 @@
 # Changelog
+## [1.1.0-alpha.0](https://github.com/liuyinz/emacs.d/compare/v1.0.0...v1.1.0-alpha.0) (2021-09-30)
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### Features
+
+* add conventional-changelog-menu--header ([f0dc0c8](https://github.com/liuyinz/emacs.d/commit/f0dc0c82331634a5d9e4798791252fc131772747))
+* add conventional-changelog-release-preset ([49fcbc8](https://github.com/liuyinz/emacs.d/commit/49fcbc86ebb75f2805bb41b04951ba80110fd84f))
+
+
+### Bug Fixes
+
+* typos ([9df319b](https://github.com/liuyinz/emacs.d/commit/9df319b1dec54c776c4b8684139b3b622b8ce0f8))
 
 ## 1.0.0 (2021-09-24)
 
