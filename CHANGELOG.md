@@ -1,4 +1,11 @@
 # Changelog
+## [1.1.0-alpha.1](https://github.com/liuyinz/emacs.d/compare/v1.1.0-alpha.0...v1.1.0-alpha.1) (2021-09-30)
+
+
+### Bug Fixes
+
+* add dependency of transient and fix version ([3b611df](https://github.com/liuyinz/emacs.d/commit/3b611dfca032b3ebef3b523dfd9ba098562301f4))
+
 ## [1.1.0-alpha.0](https://github.com/liuyinz/emacs.d/compare/v1.0.0...v1.1.0-alpha.0) (2021-09-30)
 
 
