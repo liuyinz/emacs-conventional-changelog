@@ -57,6 +57,13 @@ first if exists, otherwise create default file."
   :group 'conventional-changelog
   :type 'string)
 
+(defcustom conventional-changelog-release-preset
+  '(("--release-as=" . ("major" "minor" "patch"))
+    ("--prerelease=" . ("dev" "alpha" "beta" "rc" "nightly" "next")))
+  "Preset for --release-as and --prerelease option."
+  :group 'conventional-changelog
+  :type 'list)
+
 (defvar conventional-changelog-versionrc nil
   "Config file for standard-version if exists.")
 
@@ -127,28 +134,31 @@ first if exists, otherwise create default file."
             (propertize "latest" 'face 'font-lock-doc-face)
             (propertize tag 'face 'font-lock-variable-name-face)
             (propertize "conf" 'face 'font-lock-doc-face)
-            (propertize conf 'face 'font-lock-variable-name-face)
-            )))
+            (propertize conf 'face 'font-lock-variable-name-face))))
+
+(defun conventional-changelog-get-release-preset (prompt &optional default history)
+  (let ((lst (cdr (assoc prompt conventional-changelog-release-preset))))
+    (completing-read prompt lst nil nil nil history (or default (car lst)))))
 
 (transient-define-prefix conventional-changelog-menu ()
   "Invoke commands for `standard-version'."
   [:description conventional-changelog-menu--header
    :class transient-subgroups
    ["Preset"
-    ("-S" "Select preset" "--preset="
+    ("-H" "CHANGELOG header" "--header=")
+    ("-M" "Premajor release"  "--preMajor")
+    ("-F" "Release message" "--releaseCommitMessageFormat=")]
+   ["Option"
+    ("-k" "Select preset" "--preset="
      :choices ("angular" "atom" "codemirror" "ember"
                "eslint" "express" "jquery" "jscs" "jshint"))
-    ("-H" "CHANGELOG header" "--header=")
-    ("-M" "Premajor release"  "--preMajor=")
-    ("-F" "Release message" "--releaseCommitMessageFormat=")]
-   ["Options"
     ("-r" "Specify release type manually" "--release-as="
-     :choices ("major" "minor" "patch"))
-    ("-p" "Make pre-release with tag id" "--prerelease=")
+     :reader conventional-changelog-get-release-preset)
+    ("-p" "Make pre-release with tag id" "--prerelease="
+     :reader conventional-changelog-get-release-preset)
     ("-i" "Read CHANGELOG from" "--infile=")
     ("-t" "Specify tag prefix" "--tag-prefix=")
     ("-P" "Populate commits under path only" "--path=")
-    ("-e" "Specify commit preset" "--preset=")
     ("-f" "First release" "--first-release")
     ("-s" "Sign" "--sign")
     ("-n" "Disable hooks" "--no-verify")
@@ -157,8 +167,7 @@ first if exists, otherwise create default file."
    ["Command"
     ("r" "Generate CHANGELOG" conventional-changelog-generate)
     ("o" "Open CHANGELOG" conventional-changelog-open)
-    ("e" "Open Config" conventional-changelog-edit)]
-   ]
+    ("e" "Open Config" conventional-changelog-edit)]]
   )
 
 ;; TODO compress shell-command output
