@@ -1,4 +1,12 @@
 # Changelog
+## [1.1.0](https://github.com/liuyinz/emacs.d/compare/v1.1.0-alpha.2...v1.1.0) (2021-10-02)
+
+
+### Bug Fixes
+
+* conventional-changelog-transform error in md => org ([f08477e](https://github.com/liuyinz/emacs.d/commit/f08477e36f153a962380483cfeb60921670a5fcf))
+* remap conventional-changelog-generate ([a1d0ddf](https://github.com/liuyinz/emacs.d/commit/a1d0ddf9e09aa6f8be71aea44e6ce2882258ed39))
+
 ## [1.1.0-alpha.2](https://github.com/liuyinz/emacs.d/compare/v1.1.0-alpha.1...v1.1.0-alpha.2) (2021-10-02)
 
 
