@@ -1,4 +1,4 @@
-;;; conventional-changelog.el --- Conventional Changelog Generator for Emacs -*- lexical-binding: t -*-
+;;; conventional-changelog.el --- Conventional Changelog Generator -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2021 liuyinz
 
@@ -172,11 +172,11 @@ first if exists, otherwise create default file."
       '("c" "changelog" conventional-changelog-menu))))
 
 ;;;###autoload
-(defun conventional-changelog-generate (&optional working-directory)
-  "Generate or update CHANGELOG file in `WORKING-DIRECTORY'."
+(defun conventional-changelog-generate ()
+  "Generate or update CHANGELOG file in current repository."
   (interactive)
-  (or working-directory (setq working-directory (conventional-changelog-get-rootdir)))
-  (let* ((file (conventional-changelog-file))
+  (let* ((default-directory (conventional-changelog-get-rootdir))
+         (file (conventional-changelog-file))
          (org-ext (string= "org" (file-name-extension file)))
          (cmd (executable-find "standard-version"))
          (flags (or (mapconcat #'identity (transient-get-value) " ") ""))
@@ -191,8 +191,7 @@ first if exists, otherwise create default file."
 
     (when org-ext
       (conventional-changelog-transform)
-      (let ((default-directory working-directory)
-            (tag (conventional-changelog-get-latest-tag)))
+      (let ((tag (conventional-changelog-get-latest-tag)))
         (shell-command
          (format
           "git tag -d %1$s;git add CHANGELOG.{md,org};git commit --amend --no-edit;git tag %1$s"
@@ -201,10 +200,9 @@ first if exists, otherwise create default file."
     (switch-to-buffer (find-file-noselect file t))))
 
 ;;;###autoload
-(defun conventional-changelog-open (&optional working-directory)
-  "Open CHANGELOG file in `WORKING-DIRECTORY'."
+(defun conventional-changelog-open ()
+  "Open CHANGELOG file in current repository."
   (interactive)
-  (or working-directory (setq working-directory (conventional-changelog-get-rootdir)))
   (let ((path (conventional-changelog-file)))
     (if (file-exists-p path)
         (find-file path)
