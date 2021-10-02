@@ -159,7 +159,7 @@ first if exists, otherwise create default file."
     ("-a" "Commit all staged changes" "--commit-all")
     ("-D" "Dry run" "--dry-run")]
    ["Command"
-    ("r" "Generate CHANGELOG" conventional-changelog-generate)
+    ("g" "Generate CHANGELOG" conventional-changelog-generate)
     ("t" "Transform CHANGELOG" conventional-changelog-transform)
     ("o" "Open CHANGELOG" conventional-changelog-open)
     ("e" "Open Config" conventional-changelog-edit)]])
