@@ -4,7 +4,7 @@
 
 ;; Author: liuyinz <liuyinz@gmail.com>
 ;; Created: 2021-09-18 23:45:09
-;; Version: 1.1.0-alpha.3
+;; Version: 1.1.0
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "27") (transient "0.3.6"))
 ;; Homepage: https://github.com/liuyinz/emacs-conventional-changelog
