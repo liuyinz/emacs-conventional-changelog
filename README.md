@@ -2,8 +2,9 @@
 
 [![License GPL 3](https://img.shields.io/badge/license-GPL_3-green.svg?style=flat)](LICENSE)
 
-Generate and update CHANGELOG file in a git repository, which use [standard-version](https://github.com/conventional-changelog/standard-version).
+Generate and update CHANGELOG file in a git repository, which use [standard-version](https://github.com/conventional-changelog/standard-version). 
 This package is a plugin of [conventional-changelog](https://github.com/conventional-changelog/conventional-changelog), which is implemented with [transient](https://github.com/magit/transient).
+Inspired by [el-conventional-changelog](https://github.com/johnlepikhin/el-conventional-changelog)
 
 <!-- markdown-toc start -->
 
@@ -15,6 +16,7 @@ This package is a plugin of [conventional-changelog](https://github.com/conventi
     - [package](#package)
     - [useage](#useage)
   - [Feature](#feature)
+  - [Comparison](#comparison)
   - [Todo](#todo)
   - [License](#license)
 
@@ -69,17 +71,20 @@ Call `conventional-changelog-menu`
 ## Feature
 
 - Support [configuration](https://github.com/conventional-changelog/standard-version#configuration) by default.
-
-- Integrate with [magit](https://github.com/magit/magit)
-
 - Support both filetype of `CHANGELOG.md` and `CHANGELOG.org`, selected automatically if exists in repository.
-
+- Integrate with [magit](https://github.com/magit/magit)
 - Support preset of `--release-as` and `--prerelease` options with `conventional-changelog-release-preset`
+
+## Comparison
+
+With [el-conventional-changelog](https://github.com/johnlepikhin/el-conventional-changelog)
+
+- don't use `standard-version`, no [configuration](https://github.com/conventional-changelog/standard-version#configuration) to customize
+- only support Org style
 
 ## Todo
 
 - compress shell-command output
-
 - asyc-shell-command
 
 ## License
