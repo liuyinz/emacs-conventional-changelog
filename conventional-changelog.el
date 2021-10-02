@@ -4,9 +4,9 @@
 
 ;; Author: liuyinz <liuyinz@gmail.com>
 ;; Created: 2021-09-18 23:45:09
-;; Version: 1.1.0-alpha.1
+;; Version: 1.1.0-alpha.3
 ;; Keywords: tools
-;; Package-Requires: ((emacs "25.1") (transient "0.3.6"))
+;; Package-Requires: ((emacs "27") (transient "0.3.6"))
 ;; Homepage: https://github.com/liuyinz/emacs-conventional-changelog
 
 ;; This file is not a part of GNU Emacsl.
@@ -173,11 +173,10 @@ first if exists, otherwise create default file."
 
 ;;;###autoload
 (defun conventional-changelog-generate (&optional working-directory)
-  "Generate or update changelog-file in `WORKING-DIRECTORY'."
+  "Generate or update CHANGELOG file in `WORKING-DIRECTORY'."
   (interactive)
   (or working-directory (setq working-directory (conventional-changelog-get-rootdir)))
   (let* ((file (conventional-changelog-file))
-         (md-file (concat (file-name-sans-extension file) ".md"))
          (org-ext (string= "org" (file-name-extension file)))
          (cmd (executable-find "standard-version"))
          (flags (or (mapconcat #'identity (transient-get-value) " ") ""))
@@ -196,10 +195,8 @@ first if exists, otherwise create default file."
             (tag (conventional-changelog-get-latest-tag)))
         (shell-command
          (format
-          "git tag -d %1$s;git add %2$s %3$s;git commit --amend --no-edit;git tag %1$s"
-          (shell-quote-argument tag)
-          (shell-quote-argument file)
-          (shell-quote-argument md-file)))))
+          "git tag -d %1$s;git add CHANGELOG.{md,org};git commit --amend --no-edit;git tag %1$s"
+          (shell-quote-argument tag)))))
 
     (switch-to-buffer (find-file-noselect file t))))
 
@@ -231,8 +228,9 @@ first if exists, otherwise create default file."
   (interactive)
   (let* ((file (conventional-changelog-file))
          (tmp-file (conventional-changelog-tmp-file))
-         (md-file (concat (file-name-sans-extension file) ".md"))
          (org-ext (string= "org" (file-name-extension file)))
+         (md-file (concat (file-name-sans-extension file) ".md"))
+         (org-file (concat (file-name-sans-extension file) ".org"))
          (pandoc (executable-find "pandoc")))
 
     (unless (file-exists-p file)
@@ -242,16 +240,22 @@ first if exists, otherwise create default file."
       (user-error "Cannot find pandoc in PATH"))
 
     (if org-ext
-        (if (file-exists-p tmp-file)
-            (copy-file tmp-file md-file t)
-          (shell-command
-           (format "pandoc -f org-auto_identifiers -t markdown_strict -o %s %s"
-                   (shell-quote-argument md-file)
-                   (shell-quote-argument file))))
+        (progn
+          (if (file-exists-p tmp-file)
+              (copy-file tmp-file md-file t)
+            (shell-command
+             (format "pandoc -f org-auto_identifiers -t markdown_strict -o %s %s"
+                     (shell-quote-argument md-file)
+                     (shell-quote-argument org-file))))
+          (when (get-file-buffer org-file)
+            (kill-buffer (get-file-buffer org-file)))
+          (delete-file org-file))
       (shell-command
        (format "pandoc -f markdown_strict -t org -o %s %s"
-               (shell-quote-argument file)
+               (shell-quote-argument org-file)
                (shell-quote-argument md-file)))
+      (when (get-file-buffer md-file)
+        (kill-buffer (get-file-buffer md-file)))
       (rename-file md-file tmp-file t))))
 
 (provide 'conventional-changelog)
