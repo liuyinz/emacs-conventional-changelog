@@ -1,4 +1,12 @@
 # Changelog
+## [1.1.0-alpha.2](https://github.com/liuyinz/emacs.d/compare/v1.1.0-alpha.1...v1.1.0-alpha.2) (2021-10-02)
+
+
+### Features
+
+* add command conventional-changelog-integrate-magit ([18fb04b](https://github.com/liuyinz/emacs.d/commit/18fb04b98f89c0ce9fc5877e205f9928b725b3fa))
+* add command conventional-changelog-transform ([5317a4a](https://github.com/liuyinz/emacs.d/commit/5317a4a88cc535e377e05f8ed8b2cf7ce79cd48d))
+
 ## [1.1.0-alpha.1](https://github.com/liuyinz/emacs.d/compare/v1.1.0-alpha.0...v1.1.0-alpha.1) (2021-09-30)
 
 
