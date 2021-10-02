@@ -39,17 +39,11 @@
 
 (defcustom conventional-changelog-default-mode 'markdown
   "The default filemode of changelog file.
-`conventional-changelog' would search file like CHANGELOG.md or CHANGELOG.org
+`conventional-changelog' would select file like CHANGELOG.md or CHANGELOG.org
 first if exists, otherwise create default file."
   :group 'conventional-changelog
   :type '(choice (const :tag "use CHANGELOG.md" markdown)
                  (const :tag "use CHANGELOG.org" org)))
-
-;; ISSUE https://github.com/conventional-changelog/standard-version/issues/812
-(defcustom conventional-changelog-fix-missing nil
-  "If non-nil, add version info for missing tags in CHANGELOG file."
-  :group 'conventional-changelog
-  :type 'boolean)
 
 (defcustom conventional-changelog-tmp-dir
   "/tmp/conventional-changelog"
@@ -58,8 +52,8 @@ first if exists, otherwise create default file."
   :type 'string)
 
 (defcustom conventional-changelog-release-preset
-  '(("--release-as=" . ("major" "minor" "patch"))
-    ("--prerelease=" . ("dev" "alpha" "beta" "rc" "nightly" "next")))
+  '(("--release-as" . ("major" "minor" "patch"))
+    ("--prerelease" . ("dev" "alpha" "beta" "rc" "nightly" "next")))
   "Preset for --release-as and --prerelease option."
   :group 'conventional-changelog
   :type 'list)
@@ -137,7 +131,7 @@ first if exists, otherwise create default file."
             (propertize conf 'face 'font-lock-variable-name-face))))
 
 (defun conventional-changelog-get-release-preset (prompt &optional default history)
-  (let ((lst (cdr (assoc prompt conventional-changelog-release-preset))))
+  (let ((lst (cdr (assoc (substring prompt 0 -1) conventional-changelog-release-preset))))
     (completing-read prompt lst nil nil nil history (or default (car lst)))))
 
 (transient-define-prefix conventional-changelog-menu ()
@@ -166,55 +160,42 @@ first if exists, otherwise create default file."
     ("-D" "Dry run" "--dry-run")]
    ["Command"
     ("r" "Generate CHANGELOG" conventional-changelog-generate)
+    ("t" "Transform CHANGELOG" conventional-changelog-transform)
     ("o" "Open CHANGELOG" conventional-changelog-open)
     ("e" "Open Config" conventional-changelog-edit)]]
   )
 
-;; TODO compress shell-command output
-;; TODO asyc-shell-command
-;; TODO add README.md
 ;;;###autoload
 (defun conventional-changelog-generate (&optional working-directory)
   "Generate or update changelog-file in `WORKING-DIRECTORY'."
   (interactive)
   (or working-directory (setq working-directory (conventional-changelog-get-rootdir)))
-  (let* ((cmd (executable-find "standard-version"))
-         (org-ext (string= "org" (file-name-extension (conventional-changelog-file))))
+  (let* ((file (conventional-changelog-file))
+         (md-file (concat (file-name-sans-extension file) ".md"))
+         (org-ext (string= "org" (file-name-extension file)))
+         (cmd (executable-find "standard-version"))
          (flags (or (mapconcat #'identity (transient-get-value) " ") ""))
-         (tmp-file (conventional-changelog-tmp-file))
-         (path (conventional-changelog-file))
-         (md-path (concat (file-name-sans-extension path) ".md"))
          (shell-command-dont-erase-buffer 'beg-last-out))
 
-    (unless cmd (user-error "Cannot find %s in PATH" cmd))
+    (unless cmd (user-error "Cannot find standard-version in PATH"))
 
-    (when (and org-ext (file-exists-p path))
-      (if (file-exists-p tmp-file)
-          (copy-file tmp-file md-path t)
-        (shell-command
-         (format "pandoc -f org-auto_identifiers -t markdown_strict -o %s %s"
-                 (shell-quote-argument md-path)
-                 (shell-quote-argument path)))))
+    (when org-ext (conventional-changelog-transform))
 
     (shell-command
      (format "%s %s" (shell-quote-argument cmd) (shell-quote-argument flags)))
 
     (when org-ext
-      (shell-command
-       (format "pandoc -f markdown_strict -t org -o %s %s"
-               (shell-quote-argument path)
-               (shell-quote-argument md-path)))
-      (rename-file md-path tmp-file t)
+      (conventional-changelog-transform)
       (let ((default-directory working-directory)
             (tag (conventional-changelog-get-latest-tag)))
         (shell-command
          (format
           "git tag -d %1$s;git add %2$s %3$s;git commit --amend --no-edit;git tag %1$s"
           (shell-quote-argument tag)
-          (shell-quote-argument path)
-          (shell-quote-argument md-path)))))
+          (shell-quote-argument file)
+          (shell-quote-argument md-file)))))
 
-    (switch-to-buffer (find-file-noselect path t))))
+    (switch-to-buffer (find-file-noselect file t))))
 
 ;;;###autoload
 (defun conventional-changelog-open (&optional working-directory)
@@ -226,6 +207,7 @@ first if exists, otherwise create default file."
         (find-file path)
       (message "File: %s not exists!" path))))
 
+;;;###autoload
 (defun conventional-changelog-edit ()
   "Edit config file in `conventional-changelog-versionrc'."
   (interactive)
@@ -237,11 +219,34 @@ first if exists, otherwise create default file."
         "No config under ~/, add one?"
         '("~/.versionrc" "~/.versionrc.json" "~/.versionrc.js"))))))
 
-;; TODO transform between org and md
 ;;;###autoload
 (defun conventional-changelog-transform ()
-  "."
-  )
+  "Transform CHANGELOG file between org and markdown."
+  (interactive)
+  (let* ((file (conventional-changelog-file))
+         (tmp-file (conventional-changelog-tmp-file))
+         (md-file (concat (file-name-sans-extension file) ".md"))
+         (org-ext (string= "org" (file-name-extension file)))
+         (pandoc (executable-find "pandoc")))
+
+    (unless (file-exists-p file)
+      (user-error "%s doesn't exist!" (file-name-nondirectory file)))
+
+    (when (null pandoc)
+      (user-error "Cannot find pandoc in PATH"))
+
+    (if org-ext
+        (if (file-exists-p tmp-file)
+            (copy-file tmp-file md-file t)
+          (shell-command
+           (format "pandoc -f org-auto_identifiers -t markdown_strict -o %s %s"
+                   (shell-quote-argument md-file)
+                   (shell-quote-argument file))))
+      (shell-command
+       (format "pandoc -f markdown_strict -t org -o %s %s"
+               (shell-quote-argument file)
+               (shell-quote-argument md-file)))
+      (rename-file md-file tmp-file t))))
 
 (provide 'conventional-changelog)
 ;;; conventional-changelog.el ends here
