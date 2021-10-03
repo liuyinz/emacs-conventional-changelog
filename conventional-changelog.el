@@ -26,8 +26,9 @@
 
 ;;; Commentary:
 
-;; Generate and update CHANGELOG file in a git repository, which use `standard-version'.
-;; This package is a plugin of `conventional-changelog', inspired by https://github.com/johnlepikhin/el-conventional-changelog.
+;; Generate and update CHANGELOG file in emacs.
+;; This package provides the interface `conventional-changelog-menu', which is
+;; built with `transient', between command-line tool `standard-version' and emacs.
 ;; Call `conventional-changelog-menu' to start.
 
 ;;; Code:
@@ -40,9 +41,9 @@
   :tag "Conventional Changelog")
 
 (defcustom conventional-changelog-default-mode 'markdown
-  "The default filemode of changelog file.
-`conventional-changelog' would select file like CHANGELOG.md or CHANGELOG.org
-first if exists, otherwise create default file."
+  "The default filemode of CHANGELOG file.
+`conventional-changelog-file' would select file like CHANGELOG.md or CHANGELOG.org
+automatically if exists, otherwise create one according to default filemode."
   :group 'conventional-changelog
   :type '(choice (const :tag "use CHANGELOG.md" markdown)
                  (const :tag "use CHANGELOG.org" org)))
