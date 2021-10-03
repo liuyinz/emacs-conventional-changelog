@@ -1,4 +1,12 @@
 # Changelog
+### [1.1.1](https://github.com/liuyinz/emacs.d/compare/v1.1.0...v1.1.1) (2021-10-03)
+
+
+### Bug Fixes
+
+* wrong directory of CHANGELOG file ([1ca95c1](https://github.com/liuyinz/emacs.d/commit/1ca95c1b003702f942816767b521641cef3fe56a))
+* wrong info when no tags in repository ([96a7336](https://github.com/liuyinz/emacs.d/commit/96a73363490398a1f066c65d96019e091fffa7a1))
+
 ## [1.1.0](https://github.com/liuyinz/emacs.d/compare/v1.1.0-alpha.2...v1.1.0) (2021-10-02)
 
 
