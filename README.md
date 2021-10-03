@@ -2,15 +2,15 @@
 
 [![License GPL 3](https://img.shields.io/badge/license-GPL_3-green.svg?style=flat)](LICENSE)
 
-Generate and update CHANGELOG file in a git repository, which use [standard-version](https://github.com/conventional-changelog/standard-version). 
-This package is a plugin of [conventional-changelog](https://github.com/conventional-changelog/conventional-changelog), which is implemented with [transient](https://github.com/magit/transient).
-Inspired by [el-conventional-changelog](https://github.com/johnlepikhin/el-conventional-changelog)
+Generate and update CHANGELOG file in a git repository, which use [standard-version](https://github.com/conventional-changelog/standard-version).
+This package is a plugin of [conventional-changelog](https://github.com/conventional-changelog/conventional-changelog), inspired by [el-conventional-changelog](https://github.com/johnlepikhin/el-conventional-changelog).
 
 <!-- markdown-toc start -->
 
 **Table of Contents**
 
 - [conventional-changelog.el](#conventional-changelogel)
+  - [screenshot](#screenshot)
   - [Install](#install)
     - [dependencies](#dependencies)
     - [package](#package)
@@ -21,6 +21,16 @@ Inspired by [el-conventional-changelog](https://github.com/johnlepikhin/el-conve
   - [License](#license)
 
 <!-- markdown-toc end -->
+
+## screenshot
+
+- Implemented with [transient](https://github.com/magit/transient):
+
+![conventional-changelog-menu](image/conventional-changelog-menu.png)
+
+- Integrate with [magit](https://github.com/magit/magit):
+
+![integrate-magit](image/integrate-magit.png)
 
 ## Install
 
