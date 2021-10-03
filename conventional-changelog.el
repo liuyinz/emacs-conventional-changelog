@@ -109,9 +109,12 @@ first if exists, otherwise create default file."
                     conventional-changelog-default-mode))))))
 
 (defun conventional-changelog-get-latest-tag ()
-  "Return name of latest tag info in current repository."
-  (string-trim (shell-command-to-string
-                "git describe --tags $(git rev-list --tags --max-count=1)")))
+  "Return name of latest tag info in current repository if exists."
+  (let ((rev (shell-command-to-string "git rev-list --tags --max-count=1")))
+    (if (string= rev "")
+        "No tag"
+      (string-trim (shell-command-to-string
+                    (format "git describe --tags %s" rev))))))
 
 (defun conventional-changelog-get-rootdir ()
   "Return the absolute path to the toplevel of the current repository."
