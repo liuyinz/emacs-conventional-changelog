@@ -28,7 +28,7 @@ This package is a plugin of [conventional-changelog](https://github.com/conventi
 
 ![conventional-changelog-menu](image/conventional-changelog-menu.png)
 
-- Integrate with [magit](https://github.com/magit/magit):
+- (OPTIONAL) Integrate with [magit](https://github.com/magit/magit):
 
 ![integrate-magit](image/integrate-magit.png)
 
@@ -42,7 +42,7 @@ This package is a plugin of [conventional-changelog](https://github.com/conventi
 npm install -g standard-version
 ```
 
-- [pandoc](https://github.com/jgm/pandoc/blob/master/INSTALL.md) (OPTIONAL, org-mode required)
+- (OPTIONAL) [pandoc](https://github.com/jgm/pandoc/blob/master/INSTALL.md), `org-mode` required
 
 ```sh
 # MacOS (for example)
@@ -66,7 +66,7 @@ This package is available on [MELPA Stable](https://stable.melpa.org/#/conventio
 ```elisp
 ;; Directly
 (require 'conventional-changelog)
-;; if `Magit' installed
+;; `Magit' integration
 (conventional-changelog-integrate-magit)
 
 ;; Or with `leaf'
