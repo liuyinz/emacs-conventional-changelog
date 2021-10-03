@@ -26,7 +26,9 @@
 
 ;;; Commentary:
 
-;; Inspired by https://github.com/johnlepikhin/el-conventional-changelog
+;; Generate and update CHANGELOG file in a git repository, which use `standard-version'.
+;; This package is a plugin of `conventional-changelog', inspired by https://github.com/johnlepikhin/el-conventional-changelog.
+;; Call `conventional-changelog-menu' to start.
 
 ;;; Code:
 
