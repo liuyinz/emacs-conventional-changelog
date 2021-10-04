@@ -33,6 +33,7 @@
 
 ;;; Code:
 
+(require 'subr-x)
 (require 'transient)
 
 (defgroup conventional-changelog nil
