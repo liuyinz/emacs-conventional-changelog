@@ -1,7 +1,6 @@
 # conventional-changelog
 
 [![License GPL 3](https://img.shields.io/badge/license-GPL_3-green.svg?style=flat)](LICENSE)
-[![MELPA Stable](https://stable.melpa.org/packages/conventional-changelog-badge.svg)](https://stable.melpa.org/#/conventional-changelog)
 [![MELPA](http://melpa.org/packages/conventional-changelog-badge.svg)](http://melpa.org/#/conventional-changelog)
 
 Generate and update CHANGELOG file with [conventional-changelog][conventional-changelog] style in emacs.
@@ -61,7 +60,7 @@ Clone and add to `load-path`, require the package.
 
 - Melpa
 
-This package is available on [MELPA Stable][melpa stable] and [MELPA][melpa].
+This package is available on [MELPA][melpa].
 Install with `M-x package-install` <kbd>RET</kbd> `conventional-changelog` from within Emacs.
 
 ### useage
@@ -72,7 +71,7 @@ Install with `M-x package-install` <kbd>RET</kbd> `conventional-changelog` from 
 ;; `Magit' integration
 (conventional-changelog-integrate-magit)
 
-;; Or with `leaf'
+;; Or with `leaf', `use-package',etc
 (leaf conventional-changelog
   :require t
   :config
@@ -119,5 +118,4 @@ See [LICENSE](LICENSE).
 [semantic versioning]: https://semver.org
 [el-conventional-changelog]: https://github.com/johnlepikhin/el-conventional-changelog
 [markdown-changelog]: https://github.com/plandes/markdown-changelog
-[melpa stable]: https://stable.melpa.org/#/conventional-changelog
 [melpa]: http://melpa.org/#/conventional-changelog
