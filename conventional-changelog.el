@@ -189,7 +189,7 @@ default filemode."
     (when org-ext (conventional-changelog-transform))
 
     (shell-command
-     (format "%s %s" (shell-quote-argument cmd) (shell-quote-argument flags)))
+     (format "%s %s" (shell-quote-argument cmd) flags))
 
     (when org-ext
       (conventional-changelog-transform)
