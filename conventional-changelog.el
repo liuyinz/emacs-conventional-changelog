@@ -26,9 +26,9 @@
 
 ;;; Commentary:
 
-;; Generate and update CHANGELOG file in emacs.
+;; Generate and update CHANGELOG file in Emacs.
 ;; This package provides the interface `conventional-changelog-menu', which is
-;; built with `transient', between command-line tool `standard-version' and emacs.
+;; built with `transient', between command-line tool `standard-version' and Emacs.
 ;; Call `conventional-changelog-menu' to start.
 
 ;;; Code:
@@ -43,8 +43,9 @@
 
 (defcustom conventional-changelog-default-mode 'markdown
   "The default filemode of CHANGELOG file.
-`conventional-changelog-file' would select file like CHANGELOG.md or CHANGELOG.org
-automatically if exists, otherwise create one according to default filemode."
+`conventional-changelog-file' would select file like CHANGELOG.md or
+CHANGELOG.org automatically if exists, otherwise create one according to
+default filemode."
   :group 'conventional-changelog
   :type '(choice (const :tag "use CHANGELOG.md" markdown)
                  (const :tag "use CHANGELOG.org" org)))
@@ -125,7 +126,7 @@ automatically if exists, otherwise create one according to default filemode."
   (string-trim (shell-command-to-string "git rev-parse --show-toplevel")))
 
 (defun conventional-changelog-menu--header ()
-  "Header used in `conventional-changelog-menu'"
+  "Header used in `conventional-changelog-menu'."
   (let ((conf (abbreviate-file-name (conventional-changelog-versionrc)))
         (name (file-name-nondirectory (conventional-changelog-file)))
         (tag (conventional-changelog-get-latest-tag)))
@@ -138,6 +139,7 @@ automatically if exists, otherwise create one according to default filemode."
             (propertize conf 'face 'font-lock-variable-name-face))))
 
 (defun conventional-changelog-get-release-preset (prompt &optional default history)
+  "Return release preset according to PROMPT, with optional args DEFAULT, HISTORY."
   (let ((lst (cdr (assoc (substring prompt 0 -1) conventional-changelog-release-preset))))
     (completing-read prompt lst nil nil nil history (or default (car lst)))))
 
@@ -217,7 +219,7 @@ automatically if exists, otherwise create one according to default filemode."
 
 ;;;###autoload
 (defun conventional-changelog-edit ()
-  "Edit config file in `conventional-changelog-versionrc'."
+  "Edit config file specified by variable `conventional-changelog-versionrc'."
   (interactive)
   (let ((versionrc (conventional-changelog-versionrc)))
     (if versionrc
