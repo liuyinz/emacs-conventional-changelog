@@ -1,4 +1,11 @@
 # Changelog
+### [1.1.2](https://github.com/liuyinz/emacs.d/compare/v1.1.1...v1.1.2) (2021-10-10)
+
+
+### Bug Fixes
+
+* use default temporary-file-directory instead ([a5bbabb](https://github.com/liuyinz/emacs.d/commit/a5bbabb726590a9280ea06fa1b7ddbd4cf5fd842))
+
 ### [1.1.1](https://github.com/liuyinz/emacs.d/compare/v1.1.0...v1.1.1) (2021-10-03)
 
 

@@ -51,7 +51,7 @@ default filemode."
                  (const :tag "use CHANGELOG.org" org)))
 
 (defcustom conventional-changelog-tmp-dir
-  "/tmp/conventional-changelog"
+  (expand-file-name "conventional-changelog" (temporary-file-directory))
   "Directory which stores temporary markdown file to generate org."
   :group 'conventional-changelog
   :type 'string)
