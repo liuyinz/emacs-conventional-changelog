@@ -178,10 +178,11 @@ default filemode."
   "Generate or update CHANGELOG file in current repository."
   (interactive)
   (let* ((default-directory (conventional-changelog-get-rootdir))
-         (file (conventional-changelog-file))
-         (org-ext (string= "org" (file-name-extension file)))
          (cmd (executable-find "standard-version"))
+         (file (conventional-changelog-file))
          (flags (or (mapconcat #'identity (transient-get-value) " ") ""))
+         (dry-run (string-match "--dry-run" flags))
+         (org-ext (and (not dry-run) (string= "org" (file-name-extension file))))
          (shell-command-dont-erase-buffer 'beg-last-out))
 
     (unless cmd (user-error "Cannot find standard-version in PATH"))
@@ -199,7 +200,7 @@ default filemode."
           "git tag -d %1$s;git add CHANGELOG.{md,org};git commit --amend --no-edit;git tag %1$s"
           (shell-quote-argument tag)))))
 
-    (switch-to-buffer (find-file-noselect file t))))
+    (unless dry-run (switch-to-buffer (find-file-noselect file t)))))
 
 ;;;###autoload
 (defun conventional-changelog-open ()
@@ -236,8 +237,7 @@ default filemode."
     (unless (file-exists-p file)
       (user-error "%s doesn't exist!" (file-name-nondirectory file)))
 
-    (when (null pandoc)
-      (user-error "Cannot find pandoc in PATH"))
+    (unless pandoc (user-error "Cannot find pandoc in PATH"))
 
     (if org-ext
         (progn

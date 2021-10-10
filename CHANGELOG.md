@@ -1,4 +1,12 @@
 # Changelog
+### [1.1.3](https://github.com/liuyinz/emacs.d/compare/v1.1.2...v1.1.3) (2021-10-10)
+
+
+### Bug Fixes
+
+* do not generate org when --dry-run is enabled ([ca1dca4](https://github.com/liuyinz/emacs.d/commit/ca1dca4a53adc556ca24a1391f25ba6e0113d4f1))
+* quote flags twice problem ([118ac74](https://github.com/liuyinz/emacs.d/commit/118ac74f55454109d9a5b1a9def29a74c69fe4f6))
+
 ### [1.1.2](https://github.com/liuyinz/emacs.d/compare/v1.1.1...v1.1.2) (2021-10-10)
 
 
