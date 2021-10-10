@@ -68,14 +68,19 @@ Install with `M-x package-install` <kbd>RET</kbd> `conventional-changelog` from 
 ```elisp
 ;; Directly
 (require 'conventional-changelog)
-;; `Magit' integration
-(conventional-changelog-integrate-magit)
+(with-eval-after-load 'magit-tag    ;; Integrate to `magit-tag'
+  (transient-append-suffix 'magit-tag
+    '(1 0 -1)
+    '("c" "changelog" conventional-changelog-menu)))
 
 ;; Or with `leaf', `use-package',etc
 (leaf conventional-changelog
   :require t
   :config
-  (conventional-changelog-integrate-magit))
+  (with-eval-after-load 'magit-tag
+    (transient-append-suffix 'magit-tag
+      '(1 0 -1)
+      '("c" "changelog" conventional-changelog-menu))))
 ```
 
 Call `conventional-changelog-menu`
