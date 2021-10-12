@@ -43,7 +43,7 @@
 
 (defcustom conventional-changelog-default-mode 'markdown
   "The default filemode of CHANGELOG file.
-`conventional-changelog-file' would select file like CHANGELOG.md or
+`conventional-changelog--file' would select file like CHANGELOG.md or
 CHANGELOG.org automatically if exists, otherwise create one according to
 default filemode."
   :group 'conventional-changelog
@@ -63,20 +63,20 @@ default filemode."
   :group 'conventional-changelog
   :type 'list)
 
-(defvar conventional-changelog-versionrc nil
+(defvar conventional-changelog--versionrc nil
   "Config file for standard-version if exists.")
 
-(defun conventional-changelog-versionrc ()
+(defun conventional-changelog--versionrc ()
   "Return fullpath of CHANGELOG file in the current repository if exists."
-  (unless conventional-changelog-versionrc
-    (setq conventional-changelog-versionrc
+  (unless conventional-changelog--versionrc
+    (setq conventional-changelog--versionrc
           (car (directory-files
                 (getenv "HOME")
                 'full
                 "\\`\\.versionrc\\(\\.js\\|\\.json\\)?\\'"))))
-  conventional-changelog-versionrc)
+  conventional-changelog--versionrc)
 
-(defun conventional-changelog-tmp-file ()
+(defun conventional-changelog--tmp-file ()
   "Full path of temporary CHANGELOG.md file to generate org."
   (let ((file (convert-standard-filename (expand-file-name "CHANGELOG.md"))))
     (make-directory conventional-changelog-tmp-dir :parents)
@@ -98,13 +98,13 @@ default filemode."
          file)))
      conventional-changelog-tmp-dir)))
 
-(defun conventional-changelog-file ()
+(defun conventional-changelog--file ()
   "Return fullpath of CHANGELOG file in the current repository if exists."
   (or (car (directory-files
-            (conventional-changelog-get-rootdir)
+            (conventional-changelog--get-rootdir)
             'full
             "\\`CHANGELOG\\.\\(org\\|md\\)\\'"))
-      (concat (conventional-changelog-get-rootdir)
+      (concat (conventional-changelog--get-rootdir)
               "/"
               (pcase conventional-changelog-default-mode
                 ('markdown "CHANGELOG.md")
@@ -113,7 +113,7 @@ default filemode."
                     "Unsupported mode: %s, using markdown or org instead"
                     conventional-changelog-default-mode))))))
 
-(defun conventional-changelog-get-latest-tag ()
+(defun conventional-changelog--get-latest-tag ()
   "Return name of latest tag info in current repository if exists."
   (let ((rev (shell-command-to-string "git rev-list --tags --max-count=1")))
     (if (string= rev "")
@@ -121,15 +121,15 @@ default filemode."
       (string-trim (shell-command-to-string
                     (format "git describe --tags %s" rev))))))
 
-(defun conventional-changelog-get-rootdir ()
+(defun conventional-changelog--get-rootdir ()
   "Return the absolute path to the toplevel of the current repository."
   (string-trim (shell-command-to-string "git rev-parse --show-toplevel")))
 
-(defun conventional-changelog-menu--header ()
+(defun conventional-changelog--menu-header ()
   "Header used in `conventional-changelog-menu'."
-  (let ((conf (abbreviate-file-name (conventional-changelog-versionrc)))
-        (name (file-name-nondirectory (conventional-changelog-file)))
-        (tag (conventional-changelog-get-latest-tag)))
+  (let ((conf (abbreviate-file-name (conventional-changelog--versionrc)))
+        (name (file-name-nondirectory (conventional-changelog--file)))
+        (tag (conventional-changelog--get-latest-tag)))
     (format (propertize "[%s]: %s\t[%s]: %s\t[%s]: %s\n" 'face 'bold)
             (propertize "infile" 'face 'font-lock-doc-face)
             (propertize name 'face 'font-lock-variable-name-face)
@@ -138,27 +138,27 @@ default filemode."
             (propertize "conf" 'face 'font-lock-doc-face)
             (propertize conf 'face 'font-lock-variable-name-face))))
 
-(defun conventional-changelog-get-release-preset (prompt &optional default history)
+(defun conventional-changelog--get-release-preset (prompt &optional default history)
   "Return release preset according to PROMPT, with optional args DEFAULT, HISTORY."
   (let ((lst (cdr (assoc (substring prompt 0 -1) conventional-changelog-release-preset))))
     (completing-read prompt lst nil nil nil history (or default (car lst)))))
 
 (transient-define-prefix conventional-changelog-menu ()
   "Invoke commands for `standard-version'."
-  [:description conventional-changelog-menu--header
+  [:description conventional-changelog--menu-header
    :class transient-subgroups
    ["Preset"
+    ("-M" "Premajor release" "--preMajor")
     ("-H" "CHANGELOG header" "--header=")
-    ("-M" "Premajor release"  "--preMajor")
     ("-F" "Release message" "--releaseCommitMessageFormat=")]
    ["Option"
     ("-k" "Select preset" "--preset="
      :choices ("angular" "atom" "codemirror" "ember"
                "eslint" "express" "jquery" "jscs" "jshint"))
     ("-r" "Specify release type manually" "--release-as="
-     :reader conventional-changelog-get-release-preset)
+     :reader conventional-changelog--get-release-preset)
     ("-p" "Make pre-release with tag id" "--prerelease="
-     :reader conventional-changelog-get-release-preset)
+     :reader conventional-changelog--get-release-preset)
     ("-i" "Read CHANGELOG from" "--infile=")
     ("-t" "Specify tag prefix" "--tag-prefix=")
     ("-P" "Populate commits under path only" "--path=")
@@ -177,9 +177,9 @@ default filemode."
 (defun conventional-changelog-generate ()
   "Generate or update CHANGELOG file in current repository."
   (interactive)
-  (let* ((default-directory (conventional-changelog-get-rootdir))
+  (let* ((default-directory (conventional-changelog--get-rootdir))
          (cmd (executable-find "standard-version"))
-         (file (conventional-changelog-file))
+         (file (conventional-changelog--file))
          (flags (or (mapconcat #'identity (transient-get-value) " ") ""))
          (dry-run (string-match "--dry-run" flags))
          (org-ext (and (not dry-run) (string= "org" (file-name-extension file))))
@@ -194,7 +194,7 @@ default filemode."
 
     (when org-ext
       (conventional-changelog-transform)
-      (let ((tag (conventional-changelog-get-latest-tag)))
+      (let ((tag (conventional-changelog--get-latest-tag)))
         (shell-command
          (format
           "git tag -d %1$s;git add CHANGELOG.{md,org};git commit --amend --no-edit;git tag %1$s"
@@ -206,16 +206,16 @@ default filemode."
 (defun conventional-changelog-open ()
   "Open CHANGELOG file in current repository."
   (interactive)
-  (let ((path (conventional-changelog-file)))
+  (let ((path (conventional-changelog--file)))
     (if (file-exists-p path)
         (find-file path)
       (message "File: %s not exists!" path))))
 
 ;;;###autoload
 (defun conventional-changelog-edit ()
-  "Edit config file specified by variable `conventional-changelog-versionrc'."
+  "Edit config file specified by variable `conventional-changelog--versionrc'."
   (interactive)
-  (let ((versionrc (conventional-changelog-versionrc)))
+  (let ((versionrc (conventional-changelog--versionrc)))
     (if versionrc
         (find-file versionrc)
       (find-file
@@ -227,8 +227,8 @@ default filemode."
 (defun conventional-changelog-transform ()
   "Transform CHANGELOG file between org and markdown."
   (interactive)
-  (let* ((file (conventional-changelog-file))
-         (tmp-file (conventional-changelog-tmp-file))
+  (let* ((file (conventional-changelog--file))
+         (tmp-file (conventional-changelog--tmp-file))
          (org-ext (string= "org" (file-name-extension file)))
          (md-file (concat (file-name-sans-extension file) ".md"))
          (org-file (concat (file-name-sans-extension file) ".org"))
