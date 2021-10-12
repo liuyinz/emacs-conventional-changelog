@@ -1,4 +1,13 @@
 # Changelog
+# [1.2.0](https://github.com/liuyinz/emacs.d/compare/v1.1.3...v1.2.0) (2021-10-12)
+
+
+### Features
+
+* set default value for --preset and --tag-prefix ([8899111](https://github.com/liuyinz/emacs.d/commit/8899111487e38d68375d568fcea53f133a7cf168))
+
+
+
 ### [1.1.3](https://github.com/liuyinz/emacs.d/compare/v1.1.2...v1.1.3) (2021-10-10)
 
 

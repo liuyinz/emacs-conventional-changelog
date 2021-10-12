@@ -145,6 +145,7 @@ default filemode."
 
 (transient-define-prefix conventional-changelog-menu ()
   "Invoke commands for `standard-version'."
+  :value '("--preset=angular" "--tag-prefix=v")
   [:description conventional-changelog--menu-header
    :class transient-subgroups
    ["Preset"
@@ -153,6 +154,7 @@ default filemode."
     ("-F" "Release message" "--releaseCommitMessageFormat=")]
    ["Option"
     ("-k" "Select preset" "--preset="
+     :always-read t
      :choices ("angular" "atom" "codemirror" "ember"
                "eslint" "express" "jquery" "jscs" "jshint"))
     ("-r" "Specify release type manually" "--release-as="
@@ -160,7 +162,7 @@ default filemode."
     ("-p" "Make pre-release with tag id" "--prerelease="
      :reader conventional-changelog--get-release-preset)
     ("-i" "Read CHANGELOG from" "--infile=")
-    ("-t" "Specify tag prefix" "--tag-prefix=")
+    ("-t" "Specify tag prefix" "--tag-prefix=" :always-read t)
     ("-P" "Populate commits under path only" "--path=")
     ("-f" "First release" "--first-release")
     ("-s" "Sign" "--sign")
