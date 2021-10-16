@@ -143,6 +143,7 @@ default filemode."
   (let ((lst (cdr (assoc (substring prompt 0 -1) conventional-changelog-release-preset))))
     (completing-read prompt lst nil nil nil history (or default (car lst)))))
 
+;;;###autoload (autoload 'conventional-changelog-menu "conventional-changelog" nil t)
 (transient-define-prefix conventional-changelog-menu ()
   "Invoke commands for `standard-version'."
   :value '("--preset=angular" "--tag-prefix=v")
