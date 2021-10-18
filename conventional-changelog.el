@@ -114,7 +114,7 @@ default filemode."
                     conventional-changelog-default-mode))))))
 
 (defun conventional-changelog--get-latest-tag ()
-  "Return name of latest tag info in current repository if exists."
+  "Return name of latest tag info in local repository if exists."
   (let ((rev (shell-command-to-string "git rev-list --tags --max-count=1")))
     (if (string= rev "")
         "No tag"
@@ -192,8 +192,7 @@ default filemode."
 
     (when org-ext (conventional-changelog-transform))
 
-    (shell-command
-     (format "%s %s" (shell-quote-argument cmd) flags))
+    (shell-command (format "git fetch --tags;%s %s" (shell-quote-argument cmd) flags))
 
     (when org-ext
       (conventional-changelog-transform)

@@ -1,4 +1,14 @@
 # Changelog
+## [1.2.1](https://github.com/liuyinz/emacs-conventional-changelog/compare/v1.2.0...v1.2.1) (2021-10-18)
+
+
+### Bug Fixes
+
+* autoload command conventional-changelog-menu ([a97ab55](https://github.com/liuyinz/emacs-conventional-changelog/commit/a97ab5584d800ad80230a82dc21cb3dd33d7f965))
+* fetch remote tags before generate changelog ([0b4509f](https://github.com/liuyinz/emacs-conventional-changelog/commit/0b4509fa655675596086e2dfc0e8c54a688b6057))
+
+
+
 # [1.2.0](https://github.com/liuyinz/emacs.d/compare/v1.1.3...v1.2.0) (2021-10-12)
 
 
