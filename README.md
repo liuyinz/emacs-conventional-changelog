@@ -73,10 +73,9 @@ Install with `M-x package-install` <kbd>RET</kbd> `conventional-changelog` from 
     '(1 0 -1)
     '("c" "changelog" conventional-changelog-menu)))
 
-;; Or with `leaf', `use-package',etc
-(leaf conventional-changelog
-  :require t
-  :config
+;; Or with `use-package', etc
+(use-package conventional-changelog
+  :init
   (with-eval-after-load 'magit-tag
     (transient-append-suffix 'magit-tag
       '(1 0 -1)
