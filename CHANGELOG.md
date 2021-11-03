@@ -1,4 +1,26 @@
 # Changelog
+# [1.1.0](https://github.com/liuyinz/emacs.d/compare/v1.1.0-alpha.2...v1.1.0) (2021-11-03)
+
+
+### Bug Fixes
+
+* autoload command conventional-changelog-menu ([d2f0b6f](https://github.com/liuyinz/emacs.d/commit/d2f0b6f4302acda4bd8405685ba307eacafc6bb9))
+* conventional-changelog-transform error in md => org ([f08477e](https://github.com/liuyinz/emacs.d/commit/f08477e36f153a962380483cfeb60921670a5fcf))
+* do not generate org when --dry-run is enabled ([76c4fa2](https://github.com/liuyinz/emacs.d/commit/76c4fa276a7cf877f1b3b2aa1a63fcfdc03b2edc))
+* fetch remote tags before generate changelog ([ed2ee68](https://github.com/liuyinz/emacs.d/commit/ed2ee68b6bb99419f83830a6515b89a9fdd0ec66))
+* quote flags twice problem ([a590b9b](https://github.com/liuyinz/emacs.d/commit/a590b9b9eeddf990c53854125f548f266bda43ab))
+* remap conventional-changelog-generate ([3fb0cf8](https://github.com/liuyinz/emacs.d/commit/3fb0cf86cad311b845df866ec261ae5ba51af915))
+* use default temporary-file-directory instead ([5b8924c](https://github.com/liuyinz/emacs.d/commit/5b8924ced36317c9d813457267d9a37e40f11d6c))
+* wrong directory of CHANGELOG file ([095d031](https://github.com/liuyinz/emacs.d/commit/095d031c05b143c9e3d93d597f92d854b103cade))
+* wrong info when no tags in repository ([a3af914](https://github.com/liuyinz/emacs.d/commit/a3af914c4742f0dd2f9d93945ac50201b3fb97af))
+
+
+### Features
+
+* set default value for --preset and --tag-prefix ([05f6aca](https://github.com/liuyinz/emacs.d/commit/05f6aca757e901e7fd668b3f47327ebdaef03d39))
+
+
+
 ## [1.1.0-alpha.2](https://github.com/liuyinz/emacs.d/compare/v1.1.0-alpha.1...v1.1.0-alpha.2) (2021-10-02)
 
 
