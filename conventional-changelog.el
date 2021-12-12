@@ -156,8 +156,8 @@ default filemode."
    ["Option"
     ("-k" "Select preset" "--preset="
      :always-read t
-     :choices ("angular" "atom" "codemirror" "ember"
-               "eslint" "express" "jquery" "jscs" "jshint"))
+     :choices ("angular" "atom" "codemirror" "conventionalcommits"
+               "ember" "eslint" "express" "jquery" "jshint"))
     ("-r" "Specify release type manually" "--release-as="
      :reader conventional-changelog--get-release-preset)
     ("-p" "Make pre-release with tag id" "--prerelease="
