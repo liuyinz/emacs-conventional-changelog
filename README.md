@@ -13,11 +13,11 @@ Call `conventional-changelog-menu` to start.
 **Table of Contents**
 
 - [conventional-changelog](#conventional-changelog)
-  - [screenshot](#screenshot)
+  - [Screenshot](#screenshot)
   - [Install](#install)
     - [dependencies](#dependencies)
     - [package](#package)
-    - [useage](#useage)
+  - [Usage](#usage)
   - [Feature](#feature)
   - [Comparison](#comparison)
   - [Todo](#todo)
@@ -25,7 +25,7 @@ Call `conventional-changelog-menu` to start.
 
 <!-- markdown-toc end -->
 
-## screenshot
+## Screenshot
 
 - Implemented with [transient][transient]:
 
@@ -63,7 +63,7 @@ Clone and add to `load-path`, require the package.
 This package is available on [MELPA][melpa].
 Install with `M-x package-install` <kbd>RET</kbd> `conventional-changelog` from within Emacs.
 
-### useage
+## Usage
 
 ```elisp
 ;; Directly
