@@ -1,7 +1,0 @@
-(source gnu)
-(source melpa)
-
-(package
- (conventional-changelog
-  (recipe . (conventional-changelog :fetcher github
-                                    :repo "liuyinz/emacs-conventinal-changelog"))))
