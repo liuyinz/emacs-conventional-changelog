@@ -1,6 +1,6 @@
 ;;; conventional-changelog.el --- Conventional Changelog Generator -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021 liuyinz
+;; Copyright (C) 2021-2023 liuyinz
 
 ;; Author: liuyinz <liuyinz95@gmail.com>
 ;; Created: 2021-09-18 23:45:09
