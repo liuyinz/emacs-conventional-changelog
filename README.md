@@ -10,7 +10,7 @@ Call `conventional-changelog-menu` to start.
 
 <!-- markdown-toc start -->
 
-**Table of Contents**
+## Contents
 
 - [conventional-changelog](#conventional-changelog)
   - [Screenshot](#screenshot)
@@ -61,7 +61,7 @@ Clone and add to `load-path`, require the package.
 - Melpa
 
 This package is available on [MELPA][melpa].
-Install with `M-x package-install` <kbd>RET</kbd> `conventional-changelog` from within Emacs.
+Install with `M-x package-install` `RET` `conventional-changelog` from within Emacs.
 
 ## Usage
 
@@ -95,14 +95,15 @@ Call `conventional-changelog-menu`
 
 There are some packages which generate CHANGELOG file, adheres to [Semantic Versioning][semantic versioning]
 
-- [el-conventional-changelog][el-conventional-changelog]
+[el-conventional-changelog][el-conventional-changelog]
 
-  - Not compatible with `standard-version`
-  - only support Org
+- Not compatible with `standard-version`
+- only support Org
 
-- [markdown-changelog][markdown-changelog]
-  - Don't follow conventional style
-  - Only support Markdown
+[markdown-changelog][markdown-changelog]
+
+- Don't follow conventional style
+- Only support Markdown
 
 ## Todo
 
