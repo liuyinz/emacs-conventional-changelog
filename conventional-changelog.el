@@ -27,8 +27,7 @@
 ;;; Commentary:
 
 ;; Generate and update CHANGELOG file in Emacs.
-;; This package provides the interface `conventional-changelog-menu', which is
-;; built with `transient', between command-line tool `standard-version' and Emacs.
+;; This package provides the `transient' menu for`standard-version'.
 ;; Call `conventional-changelog-menu' to start.
 
 ;;; Code:
@@ -37,7 +36,7 @@
 (require 'transient)
 
 (defgroup conventional-changelog nil
-  "Generate CHANGELOG file in repository using standard-version."
+  "Generate CHANGELOG file in project using standard-version."
   :group 'tools
   :tag "Conventional Changelog")
 
@@ -68,13 +67,12 @@ default filemode."
 
 (defun conventional-changelog--versionrc ()
   "Return fullpath of CHANGELOG file in the current repository if exists."
-  (unless conventional-changelog--versionrc
-    (setq conventional-changelog--versionrc
-          (car (directory-files
-                (getenv "HOME")
-                'full
-                "\\`\\.versionrc\\(\\.js\\|\\.json\\)?\\'"))))
-  conventional-changelog--versionrc)
+  (or conventional-changelog--versionrc
+      (setq conventional-changelog--versionrc
+            (car (directory-files
+                  (getenv "HOME")
+                  'full
+                  "\\`\\.versionrc\\(\\.js\\|\\.json\\)?\\'")))))
 
 (defun conventional-changelog--tmp-file ()
   "Full path of temporary CHANGELOG.md file to generate org."
@@ -177,23 +175,19 @@ default filemode."
     ("e" "Open Config" conventional-changelog-edit)]])
 
 ;;;###autoload
-(defun conventional-changelog-generate ()
-  "Generate or update CHANGELOG file in current repository."
-  (interactive)
+(defun conventional-changelog-generate (args)
+  "Generate or update CHANGELOG file with ARGS."
+  (interactive (list (transient-args 'conventional-changelog-menu)))
   (let* ((default-directory (conventional-changelog--get-rootdir))
          (cmd (executable-find "standard-version"))
          (file (conventional-changelog--file))
-         (flags (or (mapconcat #'identity (transient-get-value) " ") ""))
-         (dry-run (string-match "--dry-run" flags))
+         (dry-run (transient-arg-value "--dry-run" args))
          (org-ext (and (not dry-run) (string= "org" (file-name-extension file))))
          (shell-command-dont-erase-buffer 'beg-last-out))
-
     (unless cmd (user-error "Cannot find standard-version in PATH"))
-
     (when org-ext (conventional-changelog-transform))
-
-    (shell-command (format "git fetch --tags;%s %s" (shell-quote-argument cmd) flags))
-
+    (shell-command (format "git fetch --tags;%s %s" (shell-quote-argument cmd)
+                           (string-join args " ")))
     (when org-ext
       (conventional-changelog-transform)
       (let ((tag (conventional-changelog--get-latest-tag)))
