@@ -8,6 +8,10 @@ This package provides the interface `conventional-changelog-menu`, which is
 built with [transient][transient], between command-line tool [standard-version][standard-version] and emacs.
 Call `conventional-changelog-menu` to start.
 
+**Deprecate**: due to [standard-version][standard-version] isn't maintained anymore, and other bugs such as couldn't
+identify submodules path, this package is not maintained anymore. Please use other CLI tools like [git-cliff](https://github.com/orhun/git-cliff)
+and related emacs package [git-cliff.el](https://github.com/liuyinz/git-cliff.el) instead.
+
 <!-- markdown-toc start -->
 
 ## Contents
