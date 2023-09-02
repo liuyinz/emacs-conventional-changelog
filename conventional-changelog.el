@@ -6,7 +6,7 @@
 ;; Created: 2021-09-18 23:45:09
 ;; Version: 1.1.0
 ;; Keywords: tools
-;; Package-Requires: ((emacs "26.3") (transient "0.3.7"))
+;; Package-Requires: ((emacs "26.3") (transient "0.4.1"))
 ;; Homepage: https://github.com/liuyinz/emacs-conventional-changelog
 
 ;; This file is not a part of GNU Emacsl.
